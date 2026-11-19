@@ -1,6 +1,6 @@
 // Lernen: Karteikarten, Quiz, Klausurmodus · Kalender · Chat · Einstellungen
-import { db, uid, exportAll, importAll, storageEstimate, requestPersistence, STORES } from './db.js';
-import { getSettings, saveSettings, LEVELS, makeCards, makeQuiz, makeExam, chatAnswer, listModels, quotaStatus, rankModels } from './ai.js';
+import { db, uid, exportAll, importAll, storageEstimate, requestPersistence, STORES, kvSet } from './db.js';
+import { getSettings, saveSettings, LEVELS, makeCards, makeQuiz, makeExam, chatAnswer, listModels, quotaStatus, rankModels, listGroqModels, rankGroqChat } from './ai.js';
 import { esc, md, toast, modal, confirmBox, promptBox, fmtDate, fmtDateLong, isoDay, busyHtml, download, speak, plain, relTime } from './ui.js';
 import { setHeader, go, subjects, subjectMap, showAiError, aiErrorText, materialFor } from './core.js';
 import { taskRow, bindTaskChecks } from './views-lesson.js';
@@ -369,8 +369,18 @@ export async function viewSettings(el) {
       <label class="field"><span>Gemini-API-Schlüssel</span><input id="key" type="password" autocomplete="off" value="${esc(s.apiKey)}" placeholder="AIza…"></label>
       <div class="btn-row"><button class="btn primary" id="saveKey">Speichern & testen</button></div>
       <div id="keyOut"></div>
-      <label class="field"><span>KI-Modell</span><input id="model" type="text" list="models" value="${esc(s.model)}"><datalist id="models"><option value="gemini-flash-latest"><option value="gemini-flash-lite-latest"></datalist></label>
-      <p class="muted small">„gemini-flash-latest“ nimmt immer das aktuelle, kostenlose Flash-Modell. Wenn das Tageslimit oft knapp ist, probier „gemini-flash-lite-latest“ (mehr Anfragen pro Tag, etwas ungenauer). Wird ein Modell abgeschaltet, wechselt die App selbst.</p>
+      <label class="field"><span>KI-Modell</span><input id="model" type="text" list="models" value="${esc(s.model)}"><datalist id="models"><option value="auto"><option value="gemini-flash-latest"><option value="gemini-flash-lite-latest"></datalist></label>
+      <p class="muted small">„auto“ (empfohlen): Die App nimmt das beste verfügbare Gratis-Modell. Ist eins überlastet oder im Limit, probiert sie es kurz nochmal und weicht dann auf ein anderes aus.</p>
+    </div>
+    <div class="card">
+      <h3>Reserve-KI: Groq (kostenlos)</h3>
+      <p class="muted small">Springt ein, wenn Google überlastet ist. Groq schreibt Aufnahmen sehr schnell mit (bis ca. 8 Std. Audio pro Tag gratis) und hilft bei Texten. Fotos/Scans kann nur Gemini lesen.</p>
+      ${!s.groqKey ? `<ol class="small" style="padding-left:1.2em;margin:8px 0"><li>Öffne <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> und melde dich an (z. B. mit Google).</li><li>Tippe auf <b>„Create API Key“</b>, gib einen Namen ein und kopiere den Schlüssel.</li><li>Hier einfügen.</li></ol>` : ''}
+      <label class="field"><span>Groq-API-Schlüssel</span><input id="gkey" type="password" autocomplete="off" value="${esc(s.groqKey)}" placeholder="gsk_…"></label>
+      <div class="btn-row"><button class="btn primary" id="saveGroq">Speichern & testen</button></div>
+      <div id="gOut"></div>
+      <label class="field"><span>Aufnahmen mitschreiben mit</span><div class="seg" id="stt">${[['auto', 'Gemini, Groq als Reserve'], ['groq', 'Immer Groq (schneller)']].map(([k, l]) => `<button data-v="${k}" class="${s.stt === k ? 'on' : ''}">${l}</button>`).join('')}</div></label>
+      <p class="muted small">Gemini erkennt Lehrkraft und Zwischenrufe direkt an den Stimmen. Bei Groq wird das danach anhand des Textes zugeordnet – etwas ungenauer, dafür schnell und zuverlässig.</p>
     </div>
     <div class="card">
       <h3>Limit</h3>
@@ -414,7 +424,19 @@ export async function viewSettings(el) {
 
   const num = (id, key) => el.querySelector(id).onchange = (e) => saveSettings({ [key]: Math.max(1, parseInt(e.target.value) || 1) });
   num('#rpd', 'rpd'); num('#rpm', 'rpm');
-  el.querySelector('#model').onchange = (e) => saveSettings({ model: e.target.value.trim() || 'gemini-flash-latest' });
+  el.querySelector('#model').onchange = (e) => saveSettings({ model: e.target.value.trim() || 'auto' });
+  el.querySelectorAll('#stt button').forEach(b => b.onclick = () => { saveSettings({ stt: b.dataset.v }); el.querySelectorAll('#stt button').forEach(x => x.classList.toggle('on', x === b)); });
+  el.querySelector('#saveGroq').onclick = async () => {
+    const key = el.querySelector('#gkey').value.trim(); const out = el.querySelector('#gOut');
+    if (!key) { await saveSettings({ groqKey: '' }); out.innerHTML = ''; return; }
+    out.innerHTML = busyHtml('Teste den Groq-Schlüssel …');
+    try {
+      const ids = await listGroqModels(key);
+      await saveSettings({ groqKey: key });
+      const chat = rankGroqChat(ids)[0];
+      out.innerHTML = `<div class="notice">Funktioniert. Spracherkennung: ${ids.some(i => /whisper/.test(i)) ? 'Whisper' : 'nicht verfügbar'} · Text: ${esc(chat || '–')}</div>`;
+    } catch (e) { out.innerHTML = `<div class="notice warn">${esc(e.message)}</div>`; }
+  };
   el.querySelector('#name').onchange = (e) => saveSettings({ name: e.target.value.trim() });
   el.querySelector('#grade').onchange = (e) => saveSettings({ grade: e.target.value });
   el.querySelector('#school').onchange = (e) => saveSettings({ school: e.target.value });
@@ -441,7 +463,9 @@ export async function viewSettings(el) {
       const dl = el.querySelector('#models'); dl.innerHTML = models.map(m => `<option value="${esc(m.id)}">${esc(m.name)}</option>`).join('');
       let cur = (await getSettings()).model;
       let note = '';
-      if (!models.some(m => m.id === cur)) {
+      await kvSet('geminiModels', { at: Date.now(), ids: models.map(m => m.id) });
+      if (cur === 'auto') { note = ` Automatische Auswahl, zuerst: „${esc(rankModels(models)[0] || '–')}“.`; }
+      else if (!models.some(m => m.id === cur)) {
         const best = rankModels(models)[0];
         if (best) { await saveSettings({ model: best }); el.querySelector('#model').value = best; note = ` Modell automatisch auf „${esc(best)}“ gestellt.`; cur = best; }
       }

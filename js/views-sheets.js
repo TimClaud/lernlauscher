@@ -1,6 +1,7 @@
 // Scanner, Lernblätter, Vorlagen
 import { db, uid, putBlob, getBlob, delBlob } from './db.js';
-import { getSettings, LEVELS, makeSheet, imagePart, styleFromImages, detectCorners } from './ai.js';
+import { getSettings, LEVELS, makeSheet, makeDiagram, imagePart, styleFromImages, detectCorners } from './ai.js';
+import { icon } from './icons.js';
 import { esc, toast, modal, confirmBox, promptBox, fmtDate, busyHtml, shareOrDownload, speak, plain } from './ui.js';
 import { setHeader, go, subjects, moreIcon, showAiError, aiErrorText, materialFor } from './core.js';
 import { autoCorners, processScan, pagesToPdf, defaultCorners } from './scan.js';
@@ -227,7 +228,7 @@ export async function openSheetCreator({ subjectId, source }) {
         if (source.type === 'scan') {
           const scan = await db.get('scans', source.id);
           const imgs = []; for (const p of scan.pages.slice(0, 16)) imgs.push(await imagePart(await getBlob(p.procKey || p.origKey), 1600));
-          content = await makeSheet({ images: imgs, subject: sub?.name || '', level, styleHint: tpl?.description, focus: m.querySelector('#focus').value.trim(), fromScan: true });
+          content = await makeSheet({ images: imgs, subject: sub?.name || '', level, styleHint: tpl?.description, focus: m.querySelector('#focus').value.trim(), fromScan: true, colors: tplColors(tpl) });
           if (content.source_text) scan.text = content.source_text;
           scan.sheetIds = [...(scan.sheetIds || []), null];
           const sheet = await saveSheet(content, { subjectId, tplId, source, level });
@@ -236,7 +237,7 @@ export async function openSheetCreator({ subjectId, source }) {
         } else {
           const ids = source.type === 'recording' ? { recordingIds: [source.id] } : source.ids;
           const material = await materialFor(ids);
-          content = await makeSheet({ material, subject: sub?.name || '', level, styleHint: tpl?.description, focus: m.querySelector('#focus').value.trim() });
+          content = await makeSheet({ material, subject: sub?.name || '', level, styleHint: tpl?.description, focus: m.querySelector('#focus').value.trim(), colors: tplColors(tpl) });
           const sheet = await saveSheet(content, { subjectId, tplId, source, level });
           close(); go('#/blatt/' + sheet.id);
         }
@@ -244,6 +245,7 @@ export async function openSheetCreator({ subjectId, source }) {
     };
   } });
 }
+const tplColors = (tpl) => ({ accent: tpl?.style?.accent, accent2: tpl?.style?.accent2, ink: tpl?.style?.ink });
 async function saveSheet(content, { subjectId, tplId, source, level }) {
   delete content.source_text;
   return db.put('sheets', { id: uid(), subjectId, templateId: tplId, source, level, content, createdAt: Date.now() });
@@ -267,6 +269,9 @@ export async function viewSheet(el, { id }) {
     <div class="btn-row">
       <button class="btn" id="read"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg> Vorlesen</button>
       <button class="btn" id="cards"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="14" height="12" rx="2"/><path d="M7 4h12a2 2 0 0 1 2 2v10"/></svg> Karteikarten</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="addDia">${icon('image')} Schaubild zeichnen lassen</button>
     </div>`;
   const frame = el.querySelector('#sf');
   const render = () => {
@@ -285,6 +290,18 @@ export async function viewSheet(el, { id }) {
   el.querySelector('#share').onclick = () => shareOrDownload(new Blob([html()], { type: 'text/html' }), `${(sheet.content?.title || 'Lernblatt').replace(/[^\wäöüÄÖÜß -]/g, '')}.html`, sheet.content?.title);
   el.querySelector('#read').onclick = () => speak(plain([sheet.content?.title, ...(sheet.content?.sections || []).map(s => `${s.heading}. ${s.body_md}`)].join('\n')));
   el.querySelector('#cards').onclick = () => generateCards({ subjectId: sheet.subjectId, sheetIds: [sheet.id], sourceId: sheet.id });
+  el.querySelector('#addDia').onclick = async () => {
+    const topic = await promptBox('Was soll das Schaubild zeigen?', '', { ok: 'Zeichnen', placeholder: 'z. B. Ablauf der Photosynthese als Kreislauf' });
+    if (!topic) return;
+    const close = modal(`<h2>Schaubild</h2>${busyHtml('Zeichne das Schaubild …')}`, { dismissable: false });
+    try {
+      const material = (sheet.content?.sections || []).filter(x => x.type !== 'diagramm').map(x => `${x.heading}: ${x.body_md}`).join('\n');
+      const d = await makeDiagram({ material, topic, subject: sub?.name || '', colors: tplColors(tpl()) });
+      sheet.content.sections.push({ type: 'diagramm', heading: d.heading || topic, body_md: d.body_md || '', svg: d.svg || '' });
+      await db.put('sheets', sheet); close(); render();
+      setTimeout(() => frame.scrollIntoView({ block: 'end', behavior: 'smooth' }), 400);
+    } catch (e) { close(); showAiError(e); }
+  };
   document.getElementById('shMenu').onclick = () => modal(`<h2 style="margin-bottom:10px">Lernblatt</h2><div class="list">
       <button class="row" data-a="title"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg> <span class="grow">Titel ändern</span></button>
       <button class="row" data-a="del" style="color:var(--danger)"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6.5 7l1 13h9l1-13"/></svg> <span class="grow">Lernblatt löschen</span></button></div>

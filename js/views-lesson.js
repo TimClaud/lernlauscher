@@ -319,7 +319,7 @@ export async function viewLesson(el, { id }) {
     const running = isRunning(id);
     let txt = '';
     if (running) {
-      txt = info?.phase === 'analyze' ? 'Fasse die Stunde zusammen …' : info?.phase === 'wait' ? `Kurze Pause wegen Minutenlimit (${info.seconds}s) …` : `Schreibe mit … Teil ${Math.min(p.done + 1, p.total)} von ${p.total}`;
+      txt = info?.phase === 'analyze' ? 'Fasse die Stunde zusammen …' : info?.phase === 'wait' ? `Kurze Pause wegen Minutenlimit (${info.seconds}s) …` : info?.phase === 'retry' ? info.msg : `Schreibe mit … Teil ${Math.min(p.done + 1, p.total)} von ${p.total}`;
       statusBox.innerHTML = `<div class="card">${busyHtml(txt)}<div class="progress"><i style="width:${p.total ? Math.round((p.done + (p.done === p.total ? .5 : 0)) / (p.total + 1) * 100) : 5}%"></i></div></div>`;
     } else {
       const q = await quotaStatus();

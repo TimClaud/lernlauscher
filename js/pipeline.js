@@ -43,7 +43,7 @@ export async function processRecording(id) {
       for (const part of wav.parts) {
         const res = await transcribePart(part.blob, {
           subject: subject?.name, prevContext: segs.length ? segs.slice(-4).map(s => `${s.speaker}: ${s.text}`).join('\n') : prev,
-          onWait: (s) => emit({ id, phase: 'wait', seconds: s }),
+          onWait: (s) => emit({ id, phase: 'wait', seconds: s }), onRetry: (msg) => emit({ id, phase: 'retry', msg }),
         });
         for (const s of (res.segments || [])) {
           segs.push({ t: (ch.startSec || 0) + part.offset + Math.max(0, Number(s.t) || 0), role: ['lehrkraft', 'schueler', 'stoerung'].includes(s.role) ? s.role : 'lehrkraft', speaker: s.speaker || '', text: String(s.text || '').trim() });
@@ -65,7 +65,7 @@ export async function processRecording(id) {
       }
       const a = await analyzeLesson({
         transcript: transcriptToText(segs), subject: subject?.name || '', note: rec.note, markers: rec.markers, images,
-        onWait: (s) => emit({ id, phase: 'wait', seconds: s }),
+        onWait: (s) => emit({ id, phase: 'wait', seconds: s }), onRetry: (msg) => emit({ id, phase: 'retry', msg }),
       });
       rec.analysis = a;
       if (!rec.titleEdited && a.title) rec.title = a.title;

@@ -1,5 +1,35 @@
 // Lernblatt-Darstellung mit Vorlagen (eingebaut + eigene aus Beispielbildern)
 import { md, esc } from './ui.js';
+import { icon } from './icons.js';
+
+// KI-gezeichnete SVGs absichern: nur Zeichen-Elemente, keine Skripte/Links/Ereignisse
+const SVG_OK = new Set(['svg', 'g', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'path', 'text', 'tspan', 'defs', 'marker', 'title', 'lineargradient', 'stop']);
+export function sanitizeSvg(src) {
+  const start = src ? src.search(/<svg[\s>]/i) : -1;
+  if (start < 0) return '';
+  try {
+    const doc = new DOMParser().parseFromString(src.slice(start), 'image/svg+xml');
+    const root = doc.documentElement;
+    if (!root || root.nodeName.toLowerCase() !== 'svg' || doc.querySelector('parsererror')) return '';
+    const walk = (el) => {
+      for (const ch of [...el.children]) {
+        if (!SVG_OK.has(ch.nodeName.toLowerCase())) { ch.remove(); continue; }
+        for (const at of [...ch.attributes]) {
+          const n = at.name.toLowerCase(), val = at.value;
+          if (n.startsWith('on') || n === 'href' || n === 'xlink:href' || (n === 'style' && /url\(|expression|import/i.test(val)) || /javascript:/i.test(val)) ch.removeAttribute(at.name);
+        }
+        walk(ch);
+      }
+    };
+    for (const at of [...root.attributes]) if (/^on/i.test(at.name)) root.removeAttribute(at.name);
+    walk(root);
+    root.removeAttribute('width'); root.removeAttribute('height');
+    if (!root.getAttribute('viewBox')) root.setAttribute('viewBox', '0 0 640 400');
+    root.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    root.setAttribute('role', 'img');
+    return new XMLSerializer().serializeToString(root);
+  } catch { return ''; }
+}
 
 export const BUILTIN_TEMPLATES = [
   { id: 'tpl-savanne', builtin: true, name: 'Savanne', description: 'Warme Sandtöne, Terrakotta-Akzente, ruhig und edel.',
@@ -12,8 +42,8 @@ export const BUILTIN_TEMPLATES = [
     style: { accent: '#5E7A52', accent2: '#C99A3E', background: '#F7F5EE', ink: '#28301F', paper: 'dots', headingFont: 'rounded', boxStyle: 'outlined', headerStyle: 'box', columns: 2, radius: 14, icons: true } },
 ];
 
-const ICONS = { definition: '📖', merke: '💡', beispiel: '🔎', schritte: '🪜', formel: '🧮', tabelle: '📊', achtung: '⚠️', text: '📝', zusammenfassung: '🧭', aufgaben: '✏️' };
-const LABELS = { definition: 'Definition', merke: 'Merke', beispiel: 'Beispiel', schritte: 'Schritt für Schritt', formel: 'Formel', tabelle: 'Übersicht', achtung: 'Achtung', text: '', zusammenfassung: 'Zusammenfassung', aufgaben: 'Übungsaufgaben' };
+const ICONS = { definition: 'book', merke: 'bulb', beispiel: 'pen', schritte: 'list', formel: 'sparkle', tabelle: 'sheet', achtung: 'quiz', text: 'sheet', zusammenfassung: 'check', aufgaben: 'edit', diagramm: 'image' };
+const LABELS = { definition: 'Definition', merke: 'Merke', beispiel: 'Beispiel', schritte: 'Schritt für Schritt', formel: 'Formel', tabelle: 'Übersicht', achtung: 'Achtung', text: '', zusammenfassung: 'Zusammenfassung', aufgaben: 'Übungsaufgaben', diagramm: 'Schaubild' };
 
 const FONTS = {
   serif: 'ui-serif, "New York", "Iowan Old Style", Georgia, serif',
@@ -58,11 +88,11 @@ export function sheetHtml(sheet, template, { subject = '', date = '' } = {}) {
     const type = s.type || 'text';
     const boxed = type !== 'text';
     const label = LABELS[type];
-    const icon = st.icons ? (ICONS[type] || '') + ' ' : '';
+    const ico = st.icons && ICONS[type] ? icon(ICONS[type], 'si') + ' ' : '';
     const head = s.heading || label;
     return `<section class="sec ${esc(type)} ${boxed ? 'boxed' : ''}">
-      ${head ? `<h2>${icon}${esc(head)}${label && s.heading && label !== s.heading && boxed ? ` <small>${esc(label)}</small>` : ''}</h2>` : ''}
-      <div class="body">${md(s.body_md || '')}</div></section>`;
+      ${head ? `<h2>${ico}${esc(head)}${label && s.heading && label !== s.heading && boxed ? ` <small>${esc(label)}</small>` : ''}</h2>` : ''}
+      ${type === 'diagramm' ? `<figure class="dia">${sanitizeSvg(s.svg) || '<p class="nodia">(Schaubild konnte nicht gezeichnet werden)</p>'}<figcaption>${md(s.body_md || '')}</figcaption></figure>` : `<div class="body">${md(s.body_md || '')}</div>`}</section>`;
   }).join('\n');
 
   return `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -104,6 +134,12 @@ h1, h2, h3 { font-family: ${font}; margin: 0; line-height: 1.2; }
 .body code { background: ${hexA(st.ink, .07)}; padding: 1px 4px; border-radius: 4px; }
 .body blockquote { margin: 6px 0; padding: 6px 10px; border-left: 3px solid ${st.accent2}; background: ${hexA(st.accent2, .08)}; }
 .body strong { color: ${st.ink}; }
+.si { width: 17px; height: 17px; vertical-align: -3px; }
+.sec.diagramm { break-inside: avoid; column-span: all; }
+.dia { margin: 4px 0 0; }
+.dia svg { width: 100%; height: auto; display: block; max-height: 420px; }
+.dia figcaption { font-size: 13px; opacity: .8; margin-top: 4px; }
+.nodia { opacity: .6; font-style: italic; }
 footer { margin-top: 18px; font-size: 11px; opacity: .55; text-align: center; }
 @media print { body { padding: 0; } }
 </style></head><body>

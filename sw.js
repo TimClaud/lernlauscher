@@ -1,5 +1,5 @@
 // Offline-Fähigkeit: App-Dateien zwischenspeichern
-const VERSION = 'lernlauscher-v2';
+const VERSION = 'lernlauscher-v3';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/app.css',
   'js/app.js', 'js/ai.js', 'js/core.js', 'js/db.js', 'js/pipeline.js', 'js/recorder.js', 'js/scan.js', 'js/sheet.js', 'js/ui.js',
