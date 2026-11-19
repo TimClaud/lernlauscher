@@ -32,14 +32,14 @@ export async function viewScan(el, { id, fresh }) {
   el.innerHTML = `
     <div class="chips" id="subChips" style="margin:4px 0 10px">${subs.map(x => `<button class="chip ${x.id === scan.subjectId ? 'on' : ''}" data-id="${x.id}"><span class="dot" style="background:${x.color}"></span>${esc(x.name)}</button>`).join('')}</div>
     <div class="btn-row">
-      <label class="btn primary">📷 Foto aufnehmen<input id="camIn" type="file" accept="image/*" capture="environment" hidden></label>
-      <label class="btn">🖼️ Aus Fotos<input id="libIn" type="file" accept="image/*" multiple hidden></label>
+      <label class="btn primary"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg> Foto aufnehmen<input id="camIn" type="file" accept="image/*" capture="environment" hidden></label>
+      <label class="btn"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M20.5 16l-5-5-9 8.5"/></svg> Aus Fotos<input id="libIn" type="file" accept="image/*" multiple hidden></label>
     </div>
     <p class="muted small">Tipp: Blatt auf einen dunklen Tisch legen. Die App findet die Ecken, zieht schräge Fotos gerade und macht die Schrift scharf. Tippe auf eine Seite, um die Ecken anzupassen.</p>
     <div id="busy"></div>
     <div class="scan-pages" id="pages"></div>
     <div id="scanActions"></div>
-    ${scan.sheetIds?.length ? `<div class="section-title"><h2>Lernblätter aus diesem Scan</h2></div><div class="list">${(await Promise.all(scan.sheetIds.map(x => db.get('sheets', x)))).filter(Boolean).map(s => `<a class="row" href="#/blatt/${s.id}">📝 <span class="grow title">${esc(s.content?.title || 'Lernblatt')}</span><span class="chev">›</span></a>`).join('')}</div>` : ''}`;
+    ${scan.sheetIds?.length ? `<div class="section-title"><h2>Lernblätter aus diesem Scan</h2></div><div class="list">${(await Promise.all(scan.sheetIds.map(x => db.get('sheets', x)))).filter(Boolean).map(s => `<a class="row" href="#/blatt/${s.id}"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M8.5 12h7M8.5 15.5h7M8.5 8.5h3"/></svg> <span class="grow title">${esc(s.content?.title || 'Lernblatt')}</span><span class="chev">›</span></a>`).join('')}</div>` : ''}`;
 
   el.querySelectorAll('#subChips .chip').forEach(b => b.onclick = async () => {
     scan.subjectId = b.dataset.id; await db.put('scans', scan);
@@ -54,13 +54,13 @@ export async function viewScan(el, { id, fresh }) {
     const acts = el.querySelector('#scanActions');
     acts.innerHTML = scan.pages.length ? `
       <div class="btn-row">
-        <button class="btn primary" id="toSheet">📝 Lernblatt erstellen</button>
-        <button class="btn" id="toPdf">📄 Als PDF</button>
+        <button class="btn primary" id="toSheet"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M8.5 12h7M8.5 15.5h7M8.5 8.5h3"/></svg> Lernblatt erstellen</button>
+        <button class="btn" id="toPdf"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 9h8M8 12h8M8 15h5"/></svg> Als PDF</button>
       </div>
       <div class="btn-row">
-        <button class="btn" id="toCards">🃏 Karteikarten</button>
-        <button class="btn" id="aiCorners">✨ KI-Ecken für alle</button>
-      </div>` : `<div class="empty"><div class="big">📄</div>Noch keine Seiten. Fotografiere ein Blatt oder wähle mehrere Fotos aus.</div>`;
+        <button class="btn" id="toCards"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="14" height="12" rx="2"/><path d="M7 4h12a2 2 0 0 1 2 2v10"/></svg> Karteikarten</button>
+        <button class="btn" id="aiCorners"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M18.5 15.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg> KI-Ecken für alle</button>
+      </div>` : `<div class="empty"><svg class="ic big" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 9h8M8 12h8M8 15h5"/></svg>Noch keine Seiten. Fotografiere ein Blatt oder wähle mehrere Fotos aus.</div>`;
     acts.querySelector('#toPdf')?.addEventListener('click', async () => {
       const b = acts.querySelector('#toPdf'); b.disabled = true; b.textContent = 'Erstelle PDF …';
       try {
@@ -68,7 +68,7 @@ export async function viewScan(el, { id, fresh }) {
         const pdf = await pagesToPdf(blobs, scan.title);
         await shareOrDownload(pdf, `${scan.title.replace(/[^\wäöüÄÖÜß -]/g, '') || 'Scan'}.pdf`, scan.title);
       } catch (e) { toast(e.message || 'PDF fehlgeschlagen'); }
-      b.disabled = false; b.textContent = '📄 Als PDF';
+      b.disabled = false; b.textContent = '<svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 9h8M8 12h8M8 15h5"/></svg> Als PDF';
     });
     acts.querySelector('#toSheet')?.addEventListener('click', () => openSheetCreator({ subjectId: scan.subjectId, source: { type: 'scan', id: scan.id } }));
     acts.querySelector('#toCards')?.addEventListener('click', async () => {
@@ -129,7 +129,7 @@ function editPage(scan, i, done) {
     </div>
     <div class="btn-row">
       <button class="btn danger" data-a="del">Löschen</button>
-      ${i > 0 ? '<button class="btn" data-a="left">◀︎ Nach vorn</button>' : ''}
+      ${i > 0 ? '<button class="btn" data-a="left"> Nach vorn</button>' : ''}
       <button class="btn primary" data-a="ok">Übernehmen</button>
     </div>`,
   { onMount: async (m, close) => {
@@ -182,8 +182,8 @@ function editPage(scan, i, done) {
 
 function scanMenu(scan, rerender) {
   modal(`<h2 style="margin-bottom:10px">${esc(scan.title)}</h2><div class="list">
-    <button class="row" data-a="title">✏️ <span class="grow">Titel ändern</span></button>
-    <button class="row" data-a="del" style="color:var(--danger)">🗑️ <span class="grow">Scan löschen</span></button></div>
+    <button class="row" data-a="title"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg> <span class="grow">Titel ändern</span></button>
+    <button class="row" data-a="del" style="color:var(--danger)"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6.5 7l1 13h9l1-13"/></svg> <span class="grow">Scan löschen</span></button></div>
     <div class="btn-row"><button class="btn" data-close>Schließen</button></div>`,
   { onMount: (m, close) => m.addEventListener('click', async (e) => {
     const a = e.target.closest('[data-a]')?.dataset.a; if (!a) return; close();
@@ -261,12 +261,12 @@ export async function viewSheet(el, { id }) {
     <div class="chips" id="tpls" style="margin:4px 0">${tpls.map(t => `<button class="chip ${t.id === sheet.templateId ? 'on' : ''}" data-t="${t.id}">${esc(t.name)}</button>`).join('')}</div>
     <div class="sheet-frame"><iframe id="sf" title="Lernblatt" sandbox="allow-same-origin allow-modals"></iframe></div>
     <div class="btn-row">
-      <button class="btn primary" id="print">🖨️ Drucken / PDF</button>
-      <button class="btn" id="share">📤 Teilen</button>
+      <button class="btn primary" id="print"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9V3h10v6"/><rect x="3.5" y="9" width="17" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg> Drucken / PDF</button>
+      <button class="btn" id="share"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7.5 7.5L12 3l4.5 4.5"/><path d="M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/></svg> Teilen</button>
     </div>
     <div class="btn-row">
-      <button class="btn" id="read">🔊 Vorlesen</button>
-      <button class="btn" id="cards">🃏 Karteikarten</button>
+      <button class="btn" id="read"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg> Vorlesen</button>
+      <button class="btn" id="cards"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="14" height="12" rx="2"/><path d="M7 4h12a2 2 0 0 1 2 2v10"/></svg> Karteikarten</button>
     </div>`;
   const frame = el.querySelector('#sf');
   const render = () => {
@@ -286,8 +286,8 @@ export async function viewSheet(el, { id }) {
   el.querySelector('#read').onclick = () => speak(plain([sheet.content?.title, ...(sheet.content?.sections || []).map(s => `${s.heading}. ${s.body_md}`)].join('\n')));
   el.querySelector('#cards').onclick = () => generateCards({ subjectId: sheet.subjectId, sheetIds: [sheet.id], sourceId: sheet.id });
   document.getElementById('shMenu').onclick = () => modal(`<h2 style="margin-bottom:10px">Lernblatt</h2><div class="list">
-      <button class="row" data-a="title">✏️ <span class="grow">Titel ändern</span></button>
-      <button class="row" data-a="del" style="color:var(--danger)">🗑️ <span class="grow">Lernblatt löschen</span></button></div>
+      <button class="row" data-a="title"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg> <span class="grow">Titel ändern</span></button>
+      <button class="row" data-a="del" style="color:var(--danger)"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6.5 7l1 13h9l1-13"/></svg> <span class="grow">Lernblatt löschen</span></button></div>
       <div class="btn-row"><button class="btn" data-close>Schließen</button></div>`,
     { onMount: (m, close) => m.addEventListener('click', async (e) => {
       const a = e.target.closest('[data-a]')?.dataset.a; if (!a) return; close();
@@ -319,9 +319,9 @@ function templateEditor(tpl, done) {
     { type: 'merke', heading: 'Merke', body_md: 'Ohne Licht keine Photosynthese!' },
     { type: 'schritte', heading: 'Ablauf', body_md: '1. Lichtreaktion\n2. Calvin-Zyklus' }] };
   modal(`<h2>${isNew ? 'Neue Vorlage' : esc(tpl.name)}</h2>
-    ${isNew ? `<label class="field"><span>1. Beispielbilder (Fotos von Lernblättern, Heftseiten, Designs, die dir gefallen)</span><label class="btn block">🖼️ Bilder auswählen<input id="imgs" type="file" accept="image/*" multiple hidden></label><div id="thumbs" class="scan-pages"></div></label>
+    ${isNew ? `<label class="field"><span>1. Beispielbilder (Fotos von Lernblättern, Heftseiten, Designs, die dir gefallen)</span><label class="btn block"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M20.5 16l-5-5-9 8.5"/></svg> Bilder auswählen<input id="imgs" type="file" accept="image/*" multiple hidden></label><div id="thumbs" class="scan-pages"></div></label>
     <label class="field"><span>2. Beschreibe kurz, wie es aussehen soll</span><textarea id="desc" placeholder="z. B. Pastellfarben, Merksätze in gelben Kästen, zweispaltig, wenig Text"></textarea></label>
-    <button class="btn olive block" id="analyze">✨ Stil von der KI übernehmen</button>` : ''}
+    <button class="btn olive block" id="analyze"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M18.5 15.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg> Stil von der KI übernehmen</button>` : ''}
     <div id="out"></div>
     <label class="field"><span>Name</span><input id="tn" type="text" value="${esc(tpl?.name || 'Meine Vorlage')}" ${builtin ? 'disabled' : ''}></label>
     <div class="action-grid" style="grid-template-columns:repeat(2,1fr)">
@@ -359,7 +359,7 @@ function templateEditor(tpl, done) {
         m.querySelector('#paper').value = st.paper; m.querySelector('#font').value = st.headingFont; m.querySelector('#box').value = st.boxStyle; m.querySelector('#cols').value = String(st.columns);
         if (res.name) m.querySelector('#tn').value = res.name;
         m.dataset.desc = res.description || '';
-        out.innerHTML = `<div class="notice">✨ ${esc(res.description || 'Stil übernommen.')} Du kannst unten noch nachjustieren.</div>`;
+        out.innerHTML = `<div class="notice"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M18.5 15.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg> ${esc(res.description || 'Stil übernommen.')} Du kannst unten noch nachjustieren.</div>`;
         preview();
       } catch (e) { out.innerHTML = `<div class="notice warn">${esc(aiErrorText(e))}</div>`; }
     });

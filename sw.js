@@ -1,9 +1,9 @@
 // Offline-Fähigkeit: App-Dateien zwischenspeichern
-const VERSION = 'lernlauscher-v1';
+const VERSION = 'lernlauscher-v2';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/app.css',
   'js/app.js', 'js/ai.js', 'js/core.js', 'js/db.js', 'js/pipeline.js', 'js/recorder.js', 'js/scan.js', 'js/sheet.js', 'js/ui.js',
-  'js/views-learn.js', 'js/views-lesson.js', 'js/views-sheets.js',
+  'js/views-learn.js', 'js/views-lesson.js', 'js/views-sheets.js', 'js/theme.js', 'js/icons.js',
   'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png',
 ];
 const PDF_LIB = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';

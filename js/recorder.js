@@ -26,6 +26,8 @@ export class LessonRecorder {
 
   async start() {
     this.mime = pickMime();
+    // direkt im Tipp des Nutzers anlegen, damit iOS den Ton-Kontext erlaubt
+    try { const AC = window.AudioContext || window.webkitAudioContext; this.ac = new AC(); this.ac.resume().catch(() => {}); } catch {}
     await this.#acquire();
     this.state = 'recording';
     this.runningSince = performance.now();
@@ -42,18 +44,43 @@ export class LessonRecorder {
       audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: true, channelCount: 1 },
     });
     try {
+      // Safari/iOS: AudioContext muss laufen ("resume") und der Analyser muss bis zum Ausgang
+      // verbunden sein – sonst liefert er nur Nullen und die Balken bleiben flach.
       const AC = window.AudioContext || window.webkitAudioContext;
-      this.ac = new AC();
+      if (!this.ac || this.ac.state === 'closed') this.ac = new AC();
+      try { await this.ac.resume(); } catch {}
       const src = this.ac.createMediaStreamSource(this.stream);
       this.analyser = this.ac.createAnalyser();
-      this.analyser.fftSize = 512;
-      src.connect(this.analyser);
-      const arr = new Uint8Array(this.analyser.fftSize);
+      this.analyser.fftSize = 1024;
+      this.analyser.smoothingTimeConstant = 0.6;
+      const mute = this.ac.createGain(); mute.gain.value = 0;
+      src.connect(this.analyser); this.analyser.connect(mute); mute.connect(this.ac.destination);
+      const freq = new Uint8Array(this.analyser.frequencyBinCount);
+      const time = new Uint8Array(this.analyser.fftSize);
+      const hz = this.ac.sampleRate / this.analyser.fftSize;
+      const lo = Math.max(1, Math.floor(90 / hz)), hi = Math.min(freq.length - 1, Math.ceil(4000 / hz));
+      const N = 28;
+      let peak = 0.05; const smooth = new Float32Array(N);
       const loop = () => {
         if (!this.analyser) return;
-        this.analyser.getByteTimeDomainData(arr);
-        let sum = 0; for (let i = 0; i < arr.length; i++) { const v = (arr[i] - 128) / 128; sum += v * v; }
-        this.onLevel && this.onLevel(Math.min(1, Math.sqrt(sum / arr.length) * 4));
+        if (this.ac.state === 'suspended') this.ac.resume().catch(() => {});
+        this.analyser.getByteFrequencyData(freq);
+        this.analyser.getByteTimeDomainData(time);
+        let sum = 0; for (let i = 0; i < time.length; i++) { const v = (time[i] - 128) / 128; sum += v * v; }
+        const rms = Math.sqrt(sum / time.length);
+        peak = Math.max(rms, peak * 0.995, 0.02); // passt sich an leise Räume an
+        const loud = Math.min(1, rms / peak);
+        const bars = new Array(N);
+        for (let b = 0; b < N; b++) {
+          // Sprachbereich logarithmisch auf die Balken verteilen, Mitte = tiefe Frequenzen
+          const k = Math.abs(b - (N - 1) / 2) / ((N - 1) / 2);
+          const f0 = lo * Math.pow(hi / lo, k * 0.85), f1 = lo * Math.pow(hi / lo, Math.min(1, k * 0.85 + 0.08));
+          let m = 0; for (let i = Math.floor(f0); i <= Math.ceil(f1); i++) m = Math.max(m, freq[i] || 0);
+          const v = Math.min(1, (m / 255) * 1.25) * (0.35 + 0.65 * loud);
+          smooth[b] = v > smooth[b] ? v : smooth[b] * 0.82 + v * 0.18;
+          bars[b] = smooth[b];
+        }
+        this.onLevel && this.onLevel(loud, bars);
         this.raf = requestAnimationFrame(loop);
       };
       loop();

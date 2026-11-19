@@ -11,7 +11,7 @@ export const LEVELS = {
 };
 
 export const DEFAULT_SETTINGS = {
-  apiKey: '', model: 'gemini-2.5-flash', grade: '11', school: 'Gymnasium', level: 'oberstufe',
+  apiKey: '', model: 'gemini-flash-latest', grade: '11', school: 'Gymnasium', level: 'oberstufe',
   theme: 'auto', rpm: 10, rpd: 250, chunkMin: 5, consentAccepted: false, name: '',
 };
 
@@ -94,7 +94,7 @@ function parseRetry(err) {
 }
 
 // ---------- Kern-Aufruf ----------
-export async function generate({ parts, system, schema, temperature = 0.4, onWait, model }) {
+export async function generate({ parts, system, schema, temperature = 0.4, onWait, model, _retried = false }) {
   const s = await getSettings();
   if (!s.apiKey) throw new AIError('key', 'Bitte zuerst in den Einstellungen deinen kostenlosen Gemini-Schlüssel eintragen.');
   await waitForSlot(onWait);
@@ -131,7 +131,15 @@ export async function generate({ parts, system, schema, temperature = 0.4, onWai
     if ([400, 403, 404].includes(res.status)) { const uu = await loadUsage(); uu.count = Math.max(0, uu.count - 1); await saveUsage(); }
     if (res.status === 400 && /API key|API_KEY/i.test(err?.message || '')) throw new AIError('key', 'Der Gemini-Schlüssel ist ungültig. Bitte in den Einstellungen prüfen.');
     if (res.status === 403) throw new AIError('key', 'Zugriff verweigert – ist der Schlüssel richtig und die Gemini API aktiviert?');
-    if (res.status === 404) throw new AIError('model', `Das Modell „${model || s.model}“ gibt es nicht (mehr). Bitte in den Einstellungen ein anderes wählen.`);
+    const modelGone = res.status === 404 || (res.status === 400 && /model/i.test(err?.message || '') && /not found|not supported|unsupported|deprecated|no longer/i.test(err?.message || ''));
+    if (modelGone) {
+      // Modell wurde abgeschaltet → automatisch ein verfügbares wählen und nochmal versuchen
+      if (!_retried) {
+        const pick = await pickBestModel(s.apiKey, model || s.model).catch(() => null);
+        if (pick) { await saveSettings({ model: pick }); return generate({ parts, system, schema, temperature, onWait, model: pick, _retried: true }); }
+      }
+      throw new AIError('model', `Das KI-Modell „${model || s.model}“ ist nicht verfügbar. Bitte in den Einstellungen auf „Speichern & testen“ tippen.`);
+    }
     if (res.status >= 500) throw new AIError('server', 'Google ist gerade überlastet. Bitte gleich nochmal versuchen.', Date.now() + 15000);
     throw new AIError('other', err?.message || `Fehler ${res.status}`);
   }
@@ -159,6 +167,23 @@ export async function listModels(apiKey) {
   return (json.models || [])
     .filter(m => (m.supportedGenerationMethods || []).includes('generateContent') && /gemini/i.test(m.name))
     .map(m => ({ id: m.name.replace(/^models\//, ''), name: m.displayName || m.name }));
+}
+
+// Bestes verfügbares Flash-Modell finden (schnell, im Gratis-Zugang, kann Audio & Bilder)
+export function rankModels(models, exclude = '') {
+  const bad = /(tts|image|live|audio|embedding|aqa|vision|computer|robotics|native|nano|gemma|learnlm|veo|imagen)/i;
+  const cands = models.map(m => m.id).filter(id => id !== exclude && /flash/i.test(id) && !bad.test(id));
+  const ver = (id) => parseFloat((id.match(/gemini-(\d+(?:\.\d+)?)/) || [])[1] || '0');
+  const score = (id) =>
+    (id === 'gemini-flash-latest' ? 1000 : 0) +
+    ver(id) * 10 -
+    (/lite/i.test(id) ? 5 : 0) -
+    (/preview|exp/i.test(id) ? 3 : 0) -
+    (/-\d{2,}$|-\d{3}$/.test(id) ? 1 : 0);
+  return cands.sort((a, b) => score(b) - score(a));
+}
+export async function pickBestModel(apiKey, exclude = '') {
+  return rankModels(await listModels(apiKey), exclude)[0] || null;
 }
 
 // ---------- Helfer ----------

@@ -30,17 +30,17 @@ export async function viewHome(el) {
     </div>
     ${waiting.length ? `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b>${waiting.length} Aufnahme${waiting.length > 1 ? 'n' : ''} noch nicht fertig analysiert</b><div class="muted small">Gespeichert – geht weiter, sobald das Limit frei ist.</div></div><button class="btn sm primary" id="resumeAll">Weiter</button></div></div>` : ''}
     <div class="action-grid">
-      <a class="action" href="#/aufnahme"><div class="ico">🎙️</div><b>Aufnehmen</b><span>Unterricht mitschneiden</span></a>
-      <a class="action" href="#/scan/neu"><div class="ico">📄</div><b>Scannen</b><span>Blätter & Tafel</span></a>
-      <a class="action" href="#/lernen"><div class="ico">🃏</div><b>Lernen</b><span>${due ? due + ' Karten warten' : 'Karten & Quiz'}</span></a>
-      <a class="action" href="#/klausur"><div class="ico">🎯</div><b>Klausurmodus</b><span>Gezielt vorbereiten</span></a>
-      <a class="action" href="#/chat"><div class="ico">💬</div><b>Fach-Chat</b><span>Frag deinen Stoff</span></a>
-      <a class="action" href="#/vorlagen"><div class="ico">🎨</div><b>Vorlagen</b><span>Lernblatt-Designs</span></a>
+      <a class="action" href="#/aufnahme"><div class="ico"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></div><b>Aufnehmen</b><span>Unterricht mitschneiden</span></a>
+      <a class="action" href="#/scan/neu"><div class="ico"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 9h8M8 12h8M8 15h5"/></svg></div><b>Scannen</b><span>Blätter & Tafel</span></a>
+      <a class="action" href="#/lernen"><div class="ico"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="14" height="12" rx="2"/><path d="M7 4h12a2 2 0 0 1 2 2v10"/></svg></div><b>Lernen</b><span>${due ? due + ' Karten warten' : 'Karten & Quiz'}</span></a>
+      <a class="action" href="#/klausur"><div class="ico"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></div><b>Klausurmodus</b><span>Gezielt vorbereiten</span></a>
+      <a class="action" href="#/chat"><div class="ico"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4z"/></svg></div><b>Fach-Chat</b><span>Frag deinen Stoff</span></a>
+      <a class="action" href="#/vorlagen"><div class="ico"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.8 1.8-1.7 0-1.2-1-1.6-1-2.6 0-.9.7-1.6 1.7-1.6H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.1" fill="currentColor"/><circle cx="10.5" cy="7" r="1.1" fill="currentColor"/><circle cx="15" cy="7.5" r="1.1" fill="currentColor"/></svg></div><b>Vorlagen</b><span>Lernblatt-Designs</span></a>
     </div>
     <div class="section-title"><h2>Als Nächstes</h2><a href="#/kalender">Kalender</a></div>
-    ${open.length ? `<div class="list">${open.slice(0, 5).map(t => taskRow(t, subs)).join('')}</div>` : `<div class="card flat muted small">Keine offenen Aufgaben. 🎉</div>`}
+    ${open.length ? `<div class="list">${open.slice(0, 5).map(t => taskRow(t, subs)).join('')}</div>` : `<div class="card flat muted small">Keine offenen Aufgaben. <svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M18.5 15.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg></div>`}
     <div class="section-title"><h2>Letzte Stunden</h2><a href="#/faecher">Alle</a></div>
-    ${recent.length ? `<div class="list">${recent.map(r => recRow(r, subs)).join('')}</div>` : `<div class="empty"><div class="big">🎙️</div><p>Noch keine Aufnahmen.<br>Tipp auf den großen Knopf unten.</p></div>`}
+    ${recent.length ? `<div class="list">${recent.map(r => recRow(r, subs)).join('')}</div>` : `<div class="empty"><svg class="ic big" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg><p>Noch keine Aufnahmen.<br>Tipp auf den großen Knopf unten.</p></div>`}
   `;
   el.querySelector('#resumeAll')?.addEventListener('click', async () => {
     for (const r of waiting) { try { await processRecording(r.id); } catch (e) { showAiError(e); break; } }
@@ -57,7 +57,7 @@ export function recRow(r, subs) {
 export function taskRow(t, subs) {
   const s = subs[t.subjectId];
   const overdue = t.due && !t.done && t.due < isoDay();
-  return `<div class="row ${t.done ? 'task-done' : ''}"><button class="check ${t.done ? 'on' : ''}" data-check="${t.id}" aria-label="Erledigt">${t.done ? '✓' : ''}</button>
+  return `<div class="row ${t.done ? 'task-done' : ''}"><button class="check ${t.done ? 'on' : ''}" data-check="${t.id}" aria-label="Erledigt">${t.done ? '<svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' : ''}</button>
     <div class="grow"><div class="title">${esc(t.title)}</div><div class="sub">${s ? esc(s.name) + ' · ' : ''}${t.kind && t.kind !== 'Hausaufgabe' ? esc(t.kind) + ' · ' : ''}${t.due ? `<span style="${overdue ? 'color:var(--danger)' : ''}">${fmtDate(t.due + 'T12:00')}</span>` : 'ohne Datum'}</div></div></div>`;
 }
 export function bindTaskChecks(el, rerender) {
@@ -72,7 +72,7 @@ export async function viewSubjects(el) {
   setHeader({ title: 'Fächer', actions: `<button class="icon-btn" id="addSub" aria-label="Fach hinzufügen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>` });
   const [subs, recs, scans] = await Promise.all([subjects(), db.all('recordings'), db.all('scans')]);
   const cnt = (id) => recs.filter(r => r.subjectId === id).length + scans.filter(s => s.subjectId === id).length;
-  el.innerHTML = `<div class="subject-grid">${subs.map(s => `<a class="subject-tile" style="background:${s.color}" href="#/fach/${s.id}"><span class="name">${esc(s.name)}</span><span class="count">${cnt(s.id)} Einträge</span></a>`).join('')}</div>
+  el.innerHTML = `<div class="subject-grid">${subs.map(s => `<a class="subject-tile" style="--c:${s.color}" href="#/fach/${s.id}"><span class="name">${esc(s.name)}</span><span class="count">${cnt(s.id)} Einträge</span></a>`).join('')}</div>
     <button class="btn block" id="addSub2" style="margin-top:6px">+ Eigenes Fach anlegen</button>`;
   const add = () => editSubject(null, () => viewSubjects(el));
   document.getElementById('addSub').onclick = add; el.querySelector('#addSub2').onclick = add;
@@ -112,13 +112,13 @@ export async function viewSubject(el, { id }) {
   const dueN = cards.filter(c => (c.due || 0) <= Date.now()).length;
   const subs = { [id]: sub };
   el.innerHTML = `
-    <div class="card" style="background:${sub.color};color:#fff">
+    <div class="card subj-head" style="--c:${sub.color}">
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <a class="btn sm" style="background:rgba(255,255,255,.2);color:#fff" href="#/aufnahme?fach=${id}">🎙️ Aufnehmen</a>
-        <a class="btn sm" style="background:rgba(255,255,255,.2);color:#fff" href="#/scan/neu?fach=${id}">📄 Scannen</a>
-        <a class="btn sm" style="background:rgba(255,255,255,.2);color:#fff" href="#/chat/${id}">💬 Chat</a>
-        <a class="btn sm" style="background:rgba(255,255,255,.2);color:#fff" href="#/klausur?fach=${id}">🎯 Klausur</a>
-        ${cards.length ? `<a class="btn sm" style="background:#fff;color:${sub.color}" href="#/karten/${id}">🃏 ${dueN ? dueN + ' fällig' : 'Karten'}</a>` : ''}
+        <a class="btn sm" href="#/aufnahme?fach=${id}"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg> Aufnehmen</a>
+        <a class="btn sm" href="#/scan/neu?fach=${id}"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 9h8M8 12h8M8 15h5"/></svg> Scannen</a>
+        <a class="btn sm" href="#/chat/${id}"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4z"/></svg> Chat</a>
+        <a class="btn sm" href="#/klausur?fach=${id}"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg> Klausur</a>
+        ${cards.length ? `<a class="btn sm primary" href="#/karten/${id}"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="14" height="12" rx="2"/><path d="M7 4h12a2 2 0 0 1 2 2v10"/></svg> ${dueN ? dueN + ' fällig' : 'Karten'}</a>` : ''}
       </div>
     </div>
     <div class="tabs">
@@ -129,10 +129,10 @@ export async function viewSubject(el, { id }) {
   const show = (k) => {
     sessionStorage.setItem('subTab', k);
     el.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === k));
-    if (k === 'rec') body.innerHTML = recs.length ? `<div class="list">${recs.sort((a, b) => b.createdAt - a.createdAt).map(r => recRow(r, subs)).join('')}</div>` : `<div class="empty"><div class="big">🎙️</div>Noch keine Stunden in ${esc(sub.name)}.</div>`;
-    if (k === 'scan') body.innerHTML = scans.length ? `<div class="list">${scans.sort((a, b) => b.createdAt - a.createdAt).map(s => `<a class="row" href="#/scan/${s.id}"><span style="font-size:1.3rem">📄</span><div class="grow"><div class="title">${esc(s.title || 'Scan')}</div><div class="sub">${fmtDate(s.createdAt)} · ${s.pages?.length || 0} Seiten</div></div><span class="chev">›</span></a>`).join('')}</div>` : `<div class="empty"><div class="big">📄</div>Noch keine Scans.</div>`;
-    if (k === 'sheet') body.innerHTML = sheets.length ? `<div class="list">${sheets.sort((a, b) => b.createdAt - a.createdAt).map(s => `<a class="row" href="#/blatt/${s.id}"><span style="font-size:1.3rem">📝</span><div class="grow"><div class="title">${esc(s.content?.title || 'Lernblatt')}</div><div class="sub">${fmtDate(s.createdAt)}</div></div><span class="chev">›</span></a>`).join('')}</div>` : `<div class="empty"><div class="big">📝</div>Noch keine Lernblätter. Öffne eine Stunde oder einen Scan und tippe auf „Lernblatt“.</div>`;
-    if (k === 'exam') body.innerHTML = exams.length ? `<div class="list">${exams.sort((a, b) => b.createdAt - a.createdAt).map(x => `<a class="row" href="#/pruefung/${x.id}"><span style="font-size:1.3rem">🎯</span><div class="grow"><div class="title">${esc(x.content?.title || 'Klausurvorbereitung')}</div><div class="sub">${fmtDate(x.createdAt)}</div></div><span class="chev">›</span></a>`).join('')}</div>` : `<div class="empty"><div class="big">🎯</div>Noch keine Klausurvorbereitung.</div>`;
+    if (k === 'rec') body.innerHTML = recs.length ? `<div class="list">${recs.sort((a, b) => b.createdAt - a.createdAt).map(r => recRow(r, subs)).join('')}</div>` : `<div class="empty"><svg class="ic big" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Noch keine Stunden in ${esc(sub.name)}.</div>`;
+    if (k === 'scan') body.innerHTML = scans.length ? `<div class="list">${scans.sort((a, b) => b.createdAt - a.createdAt).map(s => `<a class="row" href="#/scan/${s.id}"><span style="font-size:1.3rem"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 9h8M8 12h8M8 15h5"/></svg></span><div class="grow"><div class="title">${esc(s.title || 'Scan')}</div><div class="sub">${fmtDate(s.createdAt)} · ${s.pages?.length || 0} Seiten</div></div><span class="chev">›</span></a>`).join('')}</div>` : `<div class="empty"><svg class="ic big" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 9h8M8 12h8M8 15h5"/></svg>Noch keine Scans.</div>`;
+    if (k === 'sheet') body.innerHTML = sheets.length ? `<div class="list">${sheets.sort((a, b) => b.createdAt - a.createdAt).map(s => `<a class="row" href="#/blatt/${s.id}"><span style="font-size:1.3rem"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M8.5 12h7M8.5 15.5h7M8.5 8.5h3"/></svg></span><div class="grow"><div class="title">${esc(s.content?.title || 'Lernblatt')}</div><div class="sub">${fmtDate(s.createdAt)}</div></div><span class="chev">›</span></a>`).join('')}</div>` : `<div class="empty"><svg class="ic big" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M8.5 12h7M8.5 15.5h7M8.5 8.5h3"/></svg>Noch keine Lernblätter. Öffne eine Stunde oder einen Scan und tippe auf „Lernblatt“.</div>`;
+    if (k === 'exam') body.innerHTML = exams.length ? `<div class="list">${exams.sort((a, b) => b.createdAt - a.createdAt).map(x => `<a class="row" href="#/pruefung/${x.id}"><span style="font-size:1.3rem"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></span><div class="grow"><div class="title">${esc(x.content?.title || 'Klausurvorbereitung')}</div><div class="sub">${fmtDate(x.createdAt)}</div></div><span class="chev">›</span></a>`).join('')}</div>` : `<div class="empty"><svg class="ic big" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>Noch keine Klausurvorbereitung.</div>`;
   };
   el.querySelectorAll('.tabs button').forEach(b => b.onclick = () => show(b.dataset.tab));
   show(tab);
@@ -185,8 +185,11 @@ async function startRecording({ subjectId, title, note }, el) {
       live.chunkCount = cur.chunks.length;
     },
     onTick: (t) => { const x = document.getElementById('recTime'); if (x) x.textContent = fmtTime(t); },
-    onLevel: (v) => { const bars = document.querySelectorAll('#level i'); if (!bars.length) return; bars.forEach((b, i) => { const f = 1 - Math.abs(i - bars.length / 2) / (bars.length / 2); b.style.height = Math.max(4, v * 46 * (0.4 + 0.6 * f) * (0.7 + Math.random() * 0.6)) + 'px'; }); },
-    onState: (st) => { if (st === 'resumed-after-gap') toast('Aufnahme wurde nach einer Unterbrechung fortgesetzt.'); updateRecTab(); const p = document.getElementById('pauseBtn'); if (p) p.textContent = st === 'paused' ? '▶︎ Weiter' : '⏸ Pause'; },
+    onLevel: (v, levels) => {
+      const bars = document.querySelectorAll('#level i'); if (!bars.length) return;
+      bars.forEach((b, i) => { const x = levels ? levels[i] || 0 : v; b.style.transform = `scaleY(${Math.max(0.08, x).toFixed(3)})`; });
+    },
+    onState: (st) => { if (st === 'resumed-after-gap') toast('Aufnahme wurde nach einer Unterbrechung fortgesetzt.'); updateRecTab(); const p = document.getElementById('pauseBtn'); if (p) p.textContent = st === 'paused' ? ' Weiter' : ' Pause'; },
   });
   try { await r.start(); }
   catch (e) {
@@ -213,16 +216,16 @@ async function renderLive(el) {
       <div class="level" id="level">${'<i></i>'.repeat(28)}</div>
       <button class="rec-big on" id="stopRec" aria-label="Aufnahme beenden"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2.5"/></svg></button>
       <div class="rec-tools">
-        <button class="btn" id="pauseBtn">${live.recorder.state === 'paused' ? '▶︎ Weiter' : '⏸ Pause'}</button>
-        <button class="btn" id="markBtn">⭐ Wichtig!</button>
-        <label class="btn" style="cursor:pointer">📷 Tafelbild<input id="photoIn" type="file" accept="image/*" capture="environment" hidden></label>
+        <button class="btn" id="pauseBtn">${live.recorder.state === 'paused' ? '<svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg> Weiter' : '<svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="5" width="3.5" height="14" rx="1"/><rect x="13.5" y="5" width="3.5" height="14" rx="1"/></svg> Pause'}</button>
+        <button class="btn" id="markBtn"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/></svg> Wichtig!</button>
+        <label class="btn" style="cursor:pointer"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg> Tafelbild<input id="photoIn" type="file" accept="image/*" capture="environment" hidden></label>
       </div>
       <p class="muted small" id="liveInfo" style="margin-top:14px">${live.markers.length} Markierungen · ${live.photos.length} Fotos</p>
       <p class="muted small">Die Aufnahme wird alle paar Minuten sicher gespeichert.</p>
     </div>`;
   const info = () => { const x = el.querySelector('#liveInfo'); if (x) x.textContent = `${live.markers.length} Markierungen · ${live.photos.length} Fotos`; };
   el.querySelector('#pauseBtn').onclick = () => { live.recorder.state === 'paused' ? live.recorder.resume() : live.recorder.pause(); };
-  el.querySelector('#markBtn').onclick = () => { live.markers.push(live.recorder.elapsed); toast('⭐ Stelle markiert'); info(); if (navigator.vibrate) navigator.vibrate(30); };
+  el.querySelector('#markBtn').onclick = () => { live.markers.push(live.recorder.elapsed); toast(' Stelle markiert'); info(); if (navigator.vibrate) navigator.vibrate(30); };
   el.querySelector('#photoIn').onchange = async (e) => {
     const f = e.target.files[0]; if (!f) return;
     const sec = live.recorder.elapsed;
@@ -234,7 +237,7 @@ async function renderLive(el) {
       const procKey = await putBlob(proc);
       live.photos.push({ blobKey, procKey, sec, corners });
       const cur = await db.get('recordings', live.recId); cur.photos = live.photos.slice(); await db.put('recordings', cur);
-      toast('📷 Tafelbild gespeichert'); info();
+      toast(' Tafelbild gespeichert'); info();
     } catch (err) { toast('Foto konnte nicht verarbeitet werden.'); }
     e.target.value = '';
   };
@@ -272,16 +275,16 @@ export async function viewLesson(el, { id }) {
 
   el.innerHTML = `
     <div class="muted small" style="margin:2px 2px 8px"><span class="dot" style="display:inline-block;background:${sub?.color || '#999'}"></span> ${esc(sub?.name || 'Ohne Fach')} · ${fmtDateLong(rec.createdAt)} · ${dur(rec.durationSec || 0)}</div>
-    ${rec.note ? `<div class="notice">📝 ${esc(rec.note)}</div>` : ''}
+    ${rec.note ? `<div class="notice"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M8.5 12h7M8.5 15.5h7M8.5 8.5h3"/></svg> ${esc(rec.note)}</div>` : ''}
     <div id="statusBox"></div>
     <div class="card" style="padding:12px">
       <audio id="player" controls preload="none" style="width:100%"></audio>
       ${rec.chunks.length > 1 ? `<div class="chips" style="margin-top:8px" id="partChips">${rec.chunks.map((c, i) => `<button class="chip ${i === 0 ? 'on' : ''}" data-i="${i}">Teil ${i + 1} · ${fmtTime(c.startSec)}</button>`).join('')}</div>` : ''}
     </div>
     ${a ? `<div class="btn-row">
-      <button class="btn primary" id="mkSheet">📝 Lernblatt</button>
-      <button class="btn" id="mkCards">🃏 Karteikarten</button>
-      <button class="btn" id="mkQuiz">❓ Quiz</button>
+      <button class="btn primary" id="mkSheet"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M8.5 12h7M8.5 15.5h7M8.5 8.5h3"/></svg> Lernblatt</button>
+      <button class="btn" id="mkCards"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="14" height="12" rx="2"/><path d="M7 4h12a2 2 0 0 1 2 2v10"/></svg> Karteikarten</button>
+      <button class="btn" id="mkQuiz"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.3 2.4c-.6.2-.9.7-.9 1.3v.6"/><circle cx="12" cy="16.8" r=".9" fill="currentColor"/></svg> Quiz</button>
     </div>` : ''}
     <div class="tabs">
       ${[['sum', 'Zusammenfassung'], ['tr', 'Mitschrift'], ['exp', 'Erklär’s mir'], ['gl', 'Begriffe'], ['hw', 'Aufgaben & Termine'], ['ph', `Fotos (${rec.photos?.length || 0})`]].map(([k, l]) => `<button data-tab="${k}" class="${tab === k ? 'on' : ''}">${l}</button>`).join('')}
@@ -339,12 +342,12 @@ export async function viewLesson(el, { id }) {
     el.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === k));
     if (k === 'sum') {
       body.innerHTML = a ? `
-        <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Das Wichtigste</h3><button class="btn ghost sm" id="readBtn">🔊 Vorlesen</button></div>
+        <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Das Wichtigste</h3><button class="btn ghost sm" id="readBtn"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg> Vorlesen</button></div>
           <ul class="md">${(a.key_points || []).map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
         <div class="card md">${md(a.summary_md)}</div>
         ${a.student_contributions_md ? `<details class="card"><summary>Fragen & Beiträge aus der Klasse</summary><div class="md">${md(a.student_contributions_md)}</div></details>` : ''}
         ${a.open_questions?.length ? `<div class="card"><h3>Noch unklar</h3><ul class="md">${a.open_questions.map(x => `<li>${esc(x)}</li>`).join('')}</ul><button class="btn sm" id="explainOpen">Erklär mir das</button></div>` : ''}`
-        : `<div class="empty"><div class="big">🧠</div>Die Zusammenfassung erscheint hier, sobald die Stunde analysiert ist.</div>`;
+        : `<div class="empty"><svg class="ic big" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.9V16h5v-.2c0-.8.4-1.5 1-1.9A6 6 0 0 0 12 3z"/></svg>Die Zusammenfassung erscheint hier, sobald die Stunde analysiert ist.</div>`;
       body.querySelector('#readBtn')?.addEventListener('click', () => speak(plain((a.key_points || []).join('. ') + '\n' + a.summary_md)));
       body.querySelector('#explainOpen')?.addEventListener('click', () => { sessionStorage.setItem('explainQ', a.open_questions.join('; ')); show('exp'); });
     }
@@ -355,11 +358,11 @@ export async function viewLesson(el, { id }) {
       body.innerHTML = segs.length ? `
         <div class="seg" id="trMode">${[['clean', 'Ohne Störungen'], ['teacher', 'Nur Lehrkraft'], ['all', 'Alles']].map(([m, l]) => `<button data-m="${m}" class="${mode === m ? 'on' : ''}">${l}</button>`).join('')}</div>
         <div class="card">${list.map(s => {
-          const star = markers.some(m => Math.abs(m - s.t) < 20) ? ' ⭐' : '';
+          const star = markers.some(m => Math.abs(m - s.t) < 20) ? ' <svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/></svg>' : '';
           return `<div class="tr-line ${esc(s.role)}"><div class="tr-time" data-t="${s.t}">${fmtTime(s.t)}${star}</div><div class="tr-body"><div class="tr-who">${esc(s.speaker || s.role)}</div>${esc(s.text)}</div></div>`;
         }).join('')}</div>
         <div class="btn-row"><button class="btn sm" id="dlTr">Mitschrift als Text speichern</button></div>`
-        : `<div class="empty"><div class="big">✍️</div>${prog.total ? 'Die Mitschrift erscheint hier nach der Analyse.' : 'Keine Audio-Teile vorhanden.'}</div>`;
+        : `<div class="empty"><svg class="ic big" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.5-5.5L15 5l4 4-9.5 9.5z"/><path d="M13 7l4 4"/></svg>${prog.total ? 'Die Mitschrift erscheint hier nach der Analyse.' : 'Keine Audio-Teile vorhanden.'}</div>`;
       body.querySelectorAll('#trMode button').forEach(b => b.onclick = () => { sessionStorage.setItem('trMode', b.dataset.m); show('tr'); });
       body.querySelectorAll('.tr-time').forEach(t => t.onclick = () => seek(+t.dataset.t));
       body.querySelector('#dlTr')?.addEventListener('click', () => download(new Blob([`${rec.title}\n${fmtDateLong(rec.createdAt)}\n\n` + transcriptToText(segs, { withNoise: mode === 'all' })], { type: 'text/plain' }), `${(rec.title || 'Mitschrift').replace(/[^\wäöüÄÖÜß -]/g, '')}.txt`));
@@ -367,7 +370,7 @@ export async function viewLesson(el, { id }) {
     if (k === 'gl') {
       const gl = a?.glossary || [];
       body.innerHTML = gl.length ? `<div class="list">${gl.map(g => `<div class="row" style="display:block"><div class="title" style="white-space:normal">${esc(g.term)}</div><div class="md small">${md(g.definition)}</div></div>`).join('')}</div>
-        <button class="btn block" id="glCards">Begriffe als Karteikarten speichern</button>` : `<div class="empty"><div class="big">📖</div>Noch keine Begriffe.</div>`;
+        <button class="btn block" id="glCards">Begriffe als Karteikarten speichern</button>` : `<div class="empty"><svg class="ic big" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg>Noch keine Begriffe.</div>`;
       body.querySelector('#glCards')?.addEventListener('click', async () => {
         for (const g of gl) await db.put('cards', { id: uid(), subjectId: rec.subjectId, sourceId: rec.id, front: g.term, back: g.definition, box: 0, due: Date.now(), createdAt: Date.now() });
         toast(`${gl.length} Karteikarten angelegt`);
@@ -377,7 +380,7 @@ export async function viewLesson(el, { id }) {
       const sug = rec.homeworkPending || [];
       body.innerHTML = sug.length ? `<div class="list">${sug.map(h => `<div class="row"><div class="grow"><div class="title" style="white-space:normal">${esc(h.title)}</div><div class="sub" style="white-space:normal">${esc(h.kind)}${h.due_date ? ' · ' + fmtDate(h.due_date + 'T12:00') : ' · ohne Datum'}${h.details && h.details !== h.kind ? ' · ' + esc(h.details) : ''}</div></div>
         ${h.added ? '<span class="badge ok">Im Kalender</span>' : `<button class="btn sm primary" data-add="${h.i}">+ Kalender</button>`}</div>`).join('')}</div>`
-        : `<div class="empty"><div class="big">📅</div>${a ? 'In dieser Stunde wurden keine Hausaufgaben oder Termine erkannt.' : 'Erscheint nach der Analyse.'}</div>`;
+        : `<div class="empty"><svg class="ic big" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/></svg>${a ? 'In dieser Stunde wurden keine Hausaufgaben oder Termine erkannt.' : 'Erscheint nach der Analyse.'}</div>`;
       body.querySelectorAll('[data-add]').forEach(b => b.onclick = async () => {
         const h = sug.find(x => String(x.i) === b.dataset.add);
         await addTaskFromSuggestion(rec, h);
@@ -387,7 +390,7 @@ export async function viewLesson(el, { id }) {
     if (k === 'exp') renderExplain(body, rec, sub);
     if (k === 'ph') {
       const ph = rec.photos || [];
-      body.innerHTML = ph.length ? `<div class="scan-pages">${ph.map((p, i) => `<button class="pg" data-i="${i}"><img data-key="${p.procKey || p.blobKey}" alt="Tafelbild ${i + 1}"><span class="n">${fmtTime(p.sec)}</span></button>`).join('')}</div>` : `<div class="empty"><div class="big">📷</div>Keine Tafelbilder. Während der Aufnahme kannst du mit „📷 Tafelbild“ Fotos machen.</div>`;
+      body.innerHTML = ph.length ? `<div class="scan-pages">${ph.map((p, i) => `<button class="pg" data-i="${i}"><img data-key="${p.procKey || p.blobKey}" alt="Tafelbild ${i + 1}"><span class="n">${fmtTime(p.sec)}</span></button>`).join('')}</div>` : `<div class="empty"><svg class="ic big" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>Keine Tafelbilder. Während der Aufnahme kannst du mit „<svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg> Tafelbild“ Fotos machen.</div>`;
       body.querySelectorAll('img[data-key]').forEach(async img => { const b = await getBlob(img.dataset.key); if (b) { const u = URL.createObjectURL(b); urls.push(u); img.src = u; } });
       body.querySelectorAll('.pg').forEach(b => b.onclick = () => { const src = b.querySelector('img').src; modal(`<img src="${src}" style="width:100%;border-radius:12px"><div class="btn-row"><button class="btn" data-close>Schließen</button></div>`); });
     }
@@ -423,7 +426,7 @@ function renderExplain(body, rec, sub) {
         const text = await explain({ material, question, level, subject: sub?.name || '' });
         rec.explanations = [...(rec.explanations || []), { question, level, text, at: Date.now() }];
         await db.put('recordings', rec);
-        out.innerHTML = `<div class="card"><div style="display:flex;justify-content:flex-end"><button class="btn ghost sm" id="rd">🔊 Vorlesen</button></div><div class="md">${md(text)}</div></div>`;
+        out.innerHTML = `<div class="card"><div style="display:flex;justify-content:flex-end"><button class="btn ghost sm" id="rd"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg> Vorlesen</button></div><div class="md">${md(text)}</div></div>`;
         out.querySelector('#rd').onclick = () => speak(plain(text));
       } catch (e) { out.innerHTML = `<div class="notice warn">${esc(aiErrorText(e))}</div>`; }
     };
@@ -433,12 +436,12 @@ function renderExplain(body, rec, sub) {
 function lessonMenu(rec, rerender) {
   modal(`<h2 style="margin-bottom:10px">${esc(rec.title)}</h2>
     <div class="list">
-      <button class="row" data-a="title">✏️ <span class="grow">Titel ändern</span></button>
-      <button class="row" data-a="note">📝 <span class="grow">Notiz bearbeiten</span></button>
-      <button class="row" data-a="move">📁 <span class="grow">In anderes Fach verschieben</span></button>
-      <button class="row" data-a="redo">🔄 <span class="grow">Zusammenfassung neu erstellen</span></button>
-      <button class="row" data-a="audio">⬇️ <span class="grow">Audio speichern</span></button>
-      <button class="row" data-a="del" style="color:var(--danger)">🗑️ <span class="grow">Aufnahme löschen</span></button>
+      <button class="row" data-a="title"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg> <span class="grow">Titel ändern</span></button>
+      <button class="row" data-a="note"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M8.5 12h7M8.5 15.5h7M8.5 8.5h3"/></svg> <span class="grow">Notiz bearbeiten</span></button>
+      <button class="row" data-a="move"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> <span class="grow">In anderes Fach verschieben</span></button>
+      <button class="row" data-a="redo"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.5-4.5M4 4v4h4M4 13a8 8 0 0 0 14.5 4.5M20 20v-4h-4"/></svg> <span class="grow">Zusammenfassung neu erstellen</span></button>
+      <button class="row" data-a="audio"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/></svg> <span class="grow">Audio speichern</span></button>
+      <button class="row" data-a="del" style="color:var(--danger)"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6.5 7l1 13h9l1-13"/></svg> <span class="grow">Aufnahme löschen</span></button>
     </div><div class="btn-row"><button class="btn" data-close>Schließen</button></div>`,
   { onMount: (m, close) => m.addEventListener('click', async (e) => {
     const a = e.target.closest('[data-a]')?.dataset.a; if (!a) return;
@@ -447,7 +450,7 @@ function lessonMenu(rec, rerender) {
     if (a === 'note') { const t = await promptBox('Notiz', rec.note || '', { multiline: true }); if (t !== null) { rec.note = t; await db.put('recordings', rec); rerender(); } }
     if (a === 'move') {
       const subs = await subjects();
-      modal(`<h2>Fach wählen</h2><div class="list">${subs.map(s => `<button class="row" data-s="${s.id}"><span class="dot" style="background:${s.color}"></span><span class="grow">${esc(s.name)}</span>${s.id === rec.subjectId ? '✓' : ''}</button>`).join('')}</div>`,
+      modal(`<h2>Fach wählen</h2><div class="list">${subs.map(s => `<button class="row" data-s="${s.id}"><span class="dot" style="background:${s.color}"></span><span class="grow">${esc(s.name)}</span>${s.id === rec.subjectId ? '<svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' : ''}</button>`).join('')}</div>`,
         { onMount: (m2, close2) => m2.addEventListener('click', async ev => { const b = ev.target.closest('[data-s]'); if (!b) return; rec.subjectId = b.dataset.s; await db.put('recordings', rec); close2(); rerender(); }) });
     }
     if (a === 'redo') { rec.analysis = null; rec.status = 'queued'; await db.put('recordings', rec); rerender(); processRecording(rec.id).catch(showAiError); }

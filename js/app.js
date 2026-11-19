@@ -2,6 +2,7 @@
 import { db } from './db.js';
 import { getSettings, quotaStatus } from './ai.js';
 import { relTime } from './ui.js';
+import { applyTheme as setTheme, DEFAULT_THEME, watchSystemTheme } from './theme.js';
 import { ensureSeed, live } from './core.js';
 import { autoResume, onPipeline } from './pipeline.js';
 import { viewHome, viewSubjects, viewSubject, viewRecord, viewLesson, updateRecTab } from './views-lesson.js';
@@ -63,11 +64,13 @@ async function router() {
 }
 
 // Theme
-async function applyTheme() {
+export async function currentLook() {
   const s = await getSettings();
-  if (s.theme === 'light' || s.theme === 'dark') document.documentElement.dataset.theme = s.theme;
-  else delete document.documentElement.dataset.theme;
+  // ältere Einstellung „theme“ (auto/light/dark) übernehmen
+  return { ...DEFAULT_THEME, mode: ['light', 'dark'].includes(s.theme) ? s.theme : 'auto', ...(s.look || {}) };
 }
+async function applyTheme() { setTheme(await currentLook()); }
+watchSystemTheme(currentLook);
 
 // Limit-Leiste
 let quotaTimer = null;
@@ -80,12 +83,12 @@ async function renderQuota() {
   if (q.cooling) {
     bar.hidden = false; bar.className = 'stop';
     bar.textContent = q.cooldownReason === 'day'
-      ? `⏸ Gratis-Tageslimit erreicht. Wieder frei in ca. ${relTime(q.cooldownUntil - Date.now())} – deine Aufnahmen sind gespeichert und werden dann weiter analysiert.`
-      : `⏳ Kurze Pause (Minutenlimit) – geht in ${relTime(q.cooldownUntil - Date.now())} automatisch weiter.`;
+      ? `<svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="5" width="3.5" height="14" rx="1"/><rect x="13.5" y="5" width="3.5" height="14" rx="1"/></svg> Gratis-Tageslimit erreicht. Wieder frei in ca. ${relTime(q.cooldownUntil - Date.now())} – deine Aufnahmen sind gespeichert und werden dann weiter analysiert.`
+      : `<svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg> Kurze Pause (Minutenlimit) – geht in ${relTime(q.cooldownUntil - Date.now())} automatisch weiter.`;
     quotaTimer = setTimeout(renderQuota, 15000);
   } else if (q.ratio >= 0.8) {
     bar.hidden = false; bar.className = 'warn';
-    bar.textContent = `⚠️ Gleich ist dein Gratis-Limit für heute aufgebraucht: ${q.used} von ca. ${q.limit} Anfragen genutzt.`;
+    bar.textContent = ` Gleich ist dein Gratis-Limit für heute aufgebraucht: ${q.used} von ca. ${q.limit} Anfragen genutzt.`;
   } else bar.hidden = true;
 }
 
